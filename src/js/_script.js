@@ -1,163 +1,162 @@
 'use strict';
 
-import begin from './modules/begin';
+window.addEventListener('DOMContentLoaded', () => {
+    //begin
+    const btn = document.querySelector('#begin'),
+          disp = document.querySelector('.begin'),
+          close = document.querySelector('.tax__close');
 
-document.addEventListener('DOMContentLoaded', () => {
-    const income = document.querySelector('#income'),
-        btnAdd = document.querySelector('.btn_form'),
-        error = document.querySelector('.error'),
-        form = document.querySelector('form'),
-        btnIncome = document.querySelector('.btn_income'),
-        checkListIncome = document.querySelector('.form__payment'),
-        checkList = checkListIncome.querySelector('ul'),
-        errorText = {
+    btn.addEventListener('click', () => {
+        disp.classList.toggle('close');
+    });
+
+    close.addEventListener('click', () => {
+        disp.classList.toggle('close');
+        setTimeout(() => {
+            summTax = 0;
+            disableBtn();
+            shower('show', 'hidden');
+            inputIncome.value = '';
+        }, 1000);
+    });
+
+    //payment
+    const inputIncome = document.querySelector('#income'),
+          incomeBtn = document.querySelector('.btn_income'),
+          btnForm = document.querySelector('.btn_form'),
+          paymentList = document.querySelector('.form__payment'),
+          paymentCheckList = paymentList.querySelector('ul'),
+          paymentCheckInput = paymentCheckList.querySelector('span'),
+          error = document.querySelector('.error'),
+          form = document.querySelector('form'),
+          errorText = {
             clear: 'Поле обязательно для заполнения',
             notValid: 'Введитие свой официальный доход цифрами',
             notIncome: 'Мы Вам рекомендуем найти работу'
-        };
-    let summ = 0;
-
-
-    function disableBtn() {
-        if (summ !== 0 && summ > 0) {
-            btnAdd.removeAttribute('disabled');
-        } else {
-            btnAdd.setAttribute('disabled', true);
-        }
+          };
+    // переменная, которая сумирует выделеные чекбоксы
+    let summTax = 0;
+    // функция, которая показывает чекбоксы 
+    function shower(remove, show) {
+        paymentList.classList.remove(remove);
+        paymentList.classList.add(show);
     }
-    disableBtn();
-
-    checkList.addEventListener('click', event => {
-        if(event.target.getAttribute('data-check') == '') {
-            if (event.target.checked == true) {
-                summ += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
-            } else {
-                summ -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
-            }
-        } 
-        disableBtn();
-    });
-
-    function removeCheckList(container) {
-        container.forEach(item => {
-            item.remove();
-        });
-    }
-
+    // фнкция валидации формы
     function valid(text, remove, add, color) {
         error.textContent = text;
         error.classList.remove(remove);
         error.classList.add(add);
-        income.style.border = `1px solid ${color}`;
+        inputIncome.style.border = `1px solid ${color}`;
     }
-
-
-    function payment() {
-        let paymentCheck = document.querySelectorAll('.form__payment-check');
-
-        if (income.value == 0) {
-            valid(errorText.notIncome, 'hidden', 'show', 'var(--main-color)');
-            checkListIncome.classList.remove('show');
-            checkListIncome.classList.add('hidden');
-            summ = 0;
-            disableBtn();
-            removeCheckList(paymentCheck);
+    // функция, которая очищает поле при каждом поиске
+    function removeItem(groupItem) {
+        groupItem.forEach(item => {
+            item.remove();
+        });
+    }
+    //функция которая делает кнопку неактивной или активной
+    function disableBtn() {
+        if (summTax !== 0 && summTax > 0) {
+            btnForm.removeAttribute('disabled');
         } else {
-            let maxTaxDeduction = 260000,
-                incomeYear = income.value * 12 * 0.13,
-                arrTaxDeducation = [],
-                amountOfElements = Math.floor(maxTaxDeduction / incomeYear);
-            
-            summ = 0;
-
-            for(let i = 0; i < amountOfElements; i++) {
-                arrTaxDeducation.push(incomeYear);   
-            }
-    
-            arrTaxDeducation.push(maxTaxDeduction % incomeYear);
-            
-            removeCheckList(paymentCheck);
-    
-            for(let i = 0; i < arrTaxDeducation.length; i++) {
-                const checkIncomeYear = document.createElement('li');
-
-                checkIncomeYear.classList.add('form__payment-check');
-                checkIncomeYear.innerHTML = `
-                    <input type="checkbox" data-check>
-                    <div class="form__payment-check-text"><span>${Math.floor(arrTaxDeducation[i])} рублей</span> в ${i + 1}-ый год</div>
-                `;
-                if((i + 1) === 2){
-                    checkIncomeYear.innerHTML = `
-                    <input type="checkbox" data-check>
-                    <div class="form__payment-check-text"><span>${Math.floor(arrTaxDeducation[i])} рублей</span> во ${i + 1}-ый год</div>
-                `;
-                }
-                checkList.append(checkIncomeYear);
-            }
-            
-            checkListIncome.classList.remove('hidden');
-            checkListIncome.classList.add('show');
+            btnForm.setAttribute('disabled', true);
         }
-        
     }
+    disableBtn();
+    // делаем расчет
+    function payment() {
+        //создаем массив в который помещаем ежегодные выплаты 
+        const taxOfYear = inputIncome.value * 12 * 0.13,
+              maxTax = 260000,              
+              annualPayment = [],
+              amountOfElements = Math.floor(maxTax / taxOfYear);
+        // обнуляем сумму, чтобы от двух разных запросов не суммировались выделенные чекбоксы     
+        summTax = 0;
+        // вызываем функцию, чтобы при повторном поиске кнопка снова становилась неактивной
+        disableBtn();
+        for( let i = 0; i < amountOfElements; i++ ) {
+            annualPayment.push(taxOfYear);
+        }    
+        annualPayment.push(maxTax % taxOfYear);
 
-    btnIncome.addEventListener('click', event => {
+        removeItem(paymentCheckList.querySelectorAll('.form__payment-check'));
+        //создаем чекбоксы
+        annualPayment.forEach((item, i) => {
+            const checkIncomeYear = document.createElement('li');
+
+            checkIncomeYear.classList.add('form__payment-check');
+            checkIncomeYear.innerHTML = `
+                <input type="checkbox" data-check>
+                <div class="form__payment-check-text"><span>${Math.floor(item)} рублей</span> в ${i + 1}-ый год</div>
+            `;
+            paymentCheckList.append(checkIncomeYear);
+            shower('hidden', 'show');
+        });
+    }
+    //суммируем выделенные чекбоксы
+    paymentCheckList.addEventListener('click', event => {
+        switch (true) {
+            case (event.target.getAttribute('data-check') == '' && event.target.checked):
+                summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
+                break;
+            case (event.target.getAttribute('data-check') == '' && !event.target.checked): 
+                summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
+                break;
+        }
+        disableBtn();
+    });
+
+    incomeBtn.addEventListener('click', event => {
         event.preventDefault();
 
         switch (true) {
-            case income.validity.valueMissing :
+            case inputIncome.validity.valueMissing :
                 valid(errorText.clear, 'hidden', 'show', 'var(--main-color)');
+                shower('show', 'hidden');
                 break;
-
-            case income.value.search(/\D/g) >= 0:
+            case inputIncome.value == 0:
+                valid(errorText.notIncome, 'hidden', 'show', 'var(--main-color)');
+                shower('show', 'hidden');
+                break;
+            case inputIncome.value.search(/\D/g) >= 0:
                 valid(errorText.notValid, 'hidden', 'show', 'var(--main-color)');
+                shower('show', 'hidden');
                 break;
-
             default: 
                 valid('', 'show', 'hidden', '#DFE3E6');
                 payment();
         }
     });
 
-
+    // modal
     const modal = document.querySelector('.modal'),
-            modalClose = document.querySelector('.modal__close'),
-            modalOkBtn = document.querySelector('.btn_modal'),
-            spanModal = document.querySelector('.modal__text span');
+          modalCloseBtn = document.querySelector('.modal__close'),
+          modalOkBtn = document.querySelector('.btn_modal'),
+          spanModal = document.querySelector('.modal__text span');
 
-        modalClose.addEventListener('click', (event) => {
-            event.preventDefault();
-            modal.classList.remove('show');
-            modal.classList.add('hidden');
-        });
-
-        modalOkBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            modal.classList.remove('show');
-            modal.classList.add('hidden');
-        });
-
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.classList.remove('show');
-                modal.classList.add('hidden');
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'Escape') {
-                modal.classList.remove('show');
-                modal.classList.add('hidden');
-            }
-        });
-    
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
+    function modalClose() {
+        modal.classList.remove('show');
+        modal.classList.add('hidden');
+    }
+    function modalOpen() {
         modal.classList.remove('hidden');
         modal.classList.add('show');
-        spanModal.textContent = summ;
+    }
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal || event.target === modalOkBtn || event.target === modalCloseBtn) {
+            modalClose();
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Escape') {
+            modalClose();
+        }
     });
 
-    begin();
-
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        modalOpen();
+        spanModal.textContent = summTax;
+    });
 });

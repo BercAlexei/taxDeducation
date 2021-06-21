@@ -90,180 +90,174 @@
 /*!***************************!*\
   !*** ./src/js/_script.js ***!
   \***************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _modules_begin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/begin */ "./src/js/modules/begin.js");
 
 
+window.addEventListener('DOMContentLoaded', function () {
+  //begin
+  var btn = document.querySelector('#begin'),
+      disp = document.querySelector('.begin'),
+      close = document.querySelector('.tax__close');
+  btn.addEventListener('click', function () {
+    disp.classList.toggle('close');
+  });
+  close.addEventListener('click', function () {
+    disp.classList.toggle('close');
+    setTimeout(function () {
+      summTax = 0;
+      disableBtn();
+      shower('show', 'hidden');
+      inputIncome.value = '';
+    }, 1000);
+  }); //payment
 
-document.addEventListener('DOMContentLoaded', function () {
-  var income = document.querySelector('#income'),
-      btnAdd = document.querySelector('.btn_form'),
+  var inputIncome = document.querySelector('#income'),
+      incomeBtn = document.querySelector('.btn_income'),
+      btnForm = document.querySelector('.btn_form'),
+      paymentList = document.querySelector('.form__payment'),
+      paymentCheckList = paymentList.querySelector('ul'),
+      paymentCheckInput = paymentCheckList.querySelector('span'),
       error = document.querySelector('.error'),
       form = document.querySelector('form'),
-      btnIncome = document.querySelector('.btn_income'),
-      checkListIncome = document.querySelector('.form__payment'),
-      checkList = checkListIncome.querySelector('ul'),
       errorText = {
     clear: 'Поле обязательно для заполнения',
     notValid: 'Введитие свой официальный доход цифрами',
     notIncome: 'Мы Вам рекомендуем найти работу'
-  };
-  var summ = 0;
+  }; // переменная, которая сумирует выделеные чекбоксы
 
-  function disableBtn() {
-    if (summ !== 0 && summ > 0) {
-      btnAdd.removeAttribute('disabled');
-    } else {
-      btnAdd.setAttribute('disabled', true);
-    }
-  }
+  var summTax = 0; // функция, которая показывает чекбоксы 
 
-  disableBtn();
-  checkList.addEventListener('click', function (event) {
-    if (event.target.getAttribute('data-check') == '') {
-      if (event.target.checked == true) {
-        summ += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
-      } else {
-        summ -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
-      }
-    }
+  function shower(remove, show) {
+    paymentList.classList.remove(remove);
+    paymentList.classList.add(show);
+  } // фнкция валидации формы
 
-    disableBtn();
-  });
-
-  function removeCheckList(container) {
-    container.forEach(function (item) {
-      item.remove();
-    });
-  }
 
   function valid(text, remove, add, color) {
     error.textContent = text;
     error.classList.remove(remove);
     error.classList.add(add);
-    income.style.border = "1px solid ".concat(color);
-  }
+    inputIncome.style.border = "1px solid ".concat(color);
+  } // функция, которая очищает поле при каждом поиске
 
-  function payment() {
-    var paymentCheck = document.querySelectorAll('.form__payment-check');
 
-    if (income.value == 0) {
-      valid(errorText.notIncome, 'hidden', 'show', 'var(--main-color)');
-      checkListIncome.classList.remove('show');
-      checkListIncome.classList.add('hidden');
-      summ = 0;
-      disableBtn();
-      removeCheckList(paymentCheck);
+  function removeItem(groupItem) {
+    groupItem.forEach(function (item) {
+      item.remove();
+    });
+  } //функция которая делает кнопку неактивной или активной
+
+
+  function disableBtn() {
+    if (summTax !== 0 && summTax > 0) {
+      btnForm.removeAttribute('disabled');
     } else {
-      var maxTaxDeduction = 260000,
-          incomeYear = income.value * 12 * 0.13,
-          arrTaxDeducation = [],
-          amountOfElements = Math.floor(maxTaxDeduction / incomeYear);
-      summ = 0;
-
-      for (var i = 0; i < amountOfElements; i++) {
-        arrTaxDeducation.push(incomeYear);
-      }
-
-      arrTaxDeducation.push(maxTaxDeduction % incomeYear);
-      removeCheckList(paymentCheck);
-
-      for (var _i = 0; _i < arrTaxDeducation.length; _i++) {
-        var checkIncomeYear = document.createElement('li');
-        checkIncomeYear.classList.add('form__payment-check');
-        checkIncomeYear.innerHTML = "\n                    <input type=\"checkbox\" data-check>\n                    <div class=\"form__payment-check-text\"><span>".concat(Math.floor(arrTaxDeducation[_i]), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(_i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n                ");
-
-        if (_i + 1 === 2) {
-          checkIncomeYear.innerHTML = "\n                    <input type=\"checkbox\" data-check>\n                    <div class=\"form__payment-check-text\"><span>".concat(Math.floor(arrTaxDeducation[_i]), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432\u043E ").concat(_i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n                ");
-        }
-
-        checkList.append(checkIncomeYear);
-      }
-
-      checkListIncome.classList.remove('hidden');
-      checkListIncome.classList.add('show');
+      btnForm.setAttribute('disabled', true);
     }
   }
 
-  btnIncome.addEventListener('click', function (event) {
+  disableBtn(); // делаем расчет
+
+  function payment() {
+    //создаем массив в который помещаем ежегодные выплаты 
+    var taxOfYear = inputIncome.value * 12 * 0.13,
+        maxTax = 260000,
+        annualPayment = [],
+        amountOfElements = Math.floor(maxTax / taxOfYear); // обнуляем сумму, чтобы от двух разных запросов не суммировались выделенные чекбоксы     
+
+    summTax = 0; // вызываем функцию, чтобы при повторном поиске кнопка снова становилась неактивной
+
+    disableBtn();
+
+    for (var i = 0; i < amountOfElements; i++) {
+      annualPayment.push(taxOfYear);
+    }
+
+    annualPayment.push(maxTax % taxOfYear);
+    removeItem(paymentCheckList.querySelectorAll('.form__payment-check')); //создаем чекбоксы
+
+    annualPayment.forEach(function (item, i) {
+      var checkIncomeYear = document.createElement('li');
+      checkIncomeYear.classList.add('form__payment-check');
+      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-check>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
+      paymentCheckList.append(checkIncomeYear);
+      shower('hidden', 'show');
+    });
+  } //суммируем выделенные чекбоксы
+
+
+  paymentCheckList.addEventListener('click', function (event) {
+    switch (true) {
+      case event.target.getAttribute('data-check') == '' && event.target.checked:
+        summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
+        break;
+
+      case event.target.getAttribute('data-check') == '' && !event.target.checked:
+        summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
+        break;
+    }
+
+    disableBtn();
+  });
+  incomeBtn.addEventListener('click', function (event) {
     event.preventDefault();
 
     switch (true) {
-      case income.validity.valueMissing:
+      case inputIncome.validity.valueMissing:
         valid(errorText.clear, 'hidden', 'show', 'var(--main-color)');
+        shower('show', 'hidden');
         break;
 
-      case income.value.search(/\D/g) >= 0:
+      case inputIncome.value == 0:
+        valid(errorText.notIncome, 'hidden', 'show', 'var(--main-color)');
+        shower('show', 'hidden');
+        break;
+
+      case inputIncome.value.search(/\D/g) >= 0:
         valid(errorText.notValid, 'hidden', 'show', 'var(--main-color)');
+        shower('show', 'hidden');
         break;
 
       default:
         valid('', 'show', 'hidden', '#DFE3E6');
         payment();
     }
-  });
+  }); // modal
+
   var modal = document.querySelector('.modal'),
-      modalClose = document.querySelector('.modal__close'),
+      modalCloseBtn = document.querySelector('.modal__close'),
       modalOkBtn = document.querySelector('.btn_modal'),
       spanModal = document.querySelector('.modal__text span');
-  modalClose.addEventListener('click', function (event) {
-    event.preventDefault();
+
+  function modalClose() {
     modal.classList.remove('show');
     modal.classList.add('hidden');
-  });
-  modalOkBtn.addEventListener('click', function (event) {
-    event.preventDefault();
-    modal.classList.remove('show');
-    modal.classList.add('hidden');
-  });
+  }
+
+  function modalOpen() {
+    modal.classList.remove('hidden');
+    modal.classList.add('show');
+  }
+
   modal.addEventListener('click', function (event) {
-    if (event.target === modal) {
-      modal.classList.remove('show');
-      modal.classList.add('hidden');
+    if (event.target === modal || event.target === modalOkBtn || event.target === modalCloseBtn) {
+      modalClose();
     }
   });
   document.addEventListener('keydown', function (event) {
     if (event.code === 'Escape') {
-      modal.classList.remove('show');
-      modal.classList.add('hidden');
+      modalClose();
     }
   });
   form.addEventListener('submit', function (event) {
     event.preventDefault();
-    modal.classList.remove('hidden');
-    modal.classList.add('show');
-    spanModal.textContent = summ;
+    modalOpen();
+    spanModal.textContent = summTax;
   });
-  Object(_modules_begin__WEBPACK_IMPORTED_MODULE_0__["default"])();
 });
-
-/***/ }),
-
-/***/ "./src/js/modules/begin.js":
-/*!*********************************!*\
-  !*** ./src/js/modules/begin.js ***!
-  \*********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return begin; });
-function begin() {
-  var btn = document.querySelector('#begin'),
-      disp = document.querySelector('.begin'),
-      close = document.querySelector('.tax__close');
-  btn.addEventListener('click', function () {
-    disp.classList.add('close');
-  });
-  close.addEventListener('click', function () {
-    disp.classList.remove('close');
-  });
-}
 
 /***/ })
 

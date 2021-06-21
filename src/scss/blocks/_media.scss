@@ -1,7 +1,18 @@
 @media (max-width: 1200px) {}
 
-@media (max-width: 992px) {}
+@media (max-width: 992px) {
+    .tax {
+        width: 453px;
+    }
+}
 
 @media (max-width: 768px) {}
 
-@media (max-width: 576px) {}
+@media (max-width: 576px) {
+    .tax {
+        top: 0;
+        width: 100vw;
+        min-height: 100vh;
+        border-radius: 0;
+    }
+}
