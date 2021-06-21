@@ -1,0 +1,35 @@
+.tax {
+    position: absolute;
+    padding: 32px;
+    z-index: 1;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 552px;
+    min-height: 476px;
+    background: #FFFFFF;
+    border-radius: 30px;
+    &__close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        font-size: 40px;
+        line-height: 22px;
+        color: var(--main-color);
+        cursor: pointer;
+        transition: all .3s;
+        &:hover {
+            font-size: 42px;
+            text-shadow: 1px 1px 10px var(--text-color-gray);
+        }
+    }
+
+    &__descr {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 24px;
+        color: var(--text-color-gray);
+        margin-top: 16px;
+    }
+}

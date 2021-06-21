@@ -1,0 +1,29 @@
+@import 'base/libs';
+@import 'base/fonts';
+@import 'base/vars';
+@import 'base/animation';
+
+body {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+* {
+    font-family: 'LabGrotesque', sans-serif;
+}
+
+// .container {
+//     position: relative;
+//     max-width: 940px;
+//     margin: 0 auto;
+// }
+
+@import 'blocks/title';
+@import 'blocks/btns';
+@import 'blocks/begin';
+@import 'blocks/tax';
+@import 'blocks/form';
+@import 'blocks/shower';
+@import 'blocks/error';
+@import 'blocks/modal';
+
+@import 'blocks/media';

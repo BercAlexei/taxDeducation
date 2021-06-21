@@ -1,0 +1,13 @@
+.begin {
+    height: 100vh;
+    width: 100vw;
+    left: 0;    
+    position: relative;
+    z-index: 10;
+    background: linear-gradient(255.35deg, #DC3131 0.83%, rgba(255, 79, 79, 0) 108.93%), #FF5E56;
+    transition: all 1s;
+}
+
+.close {
+    left: -100vw;
+}
