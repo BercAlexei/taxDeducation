@@ -17,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
             disableBtn();
             shower('show', 'hidden');
             inputIncome.value = '';
-        }, 1000);
+        }, 800);
     });
 
     //payment
@@ -32,7 +32,8 @@ window.addEventListener('DOMContentLoaded', () => {
           errorText = {
             clear: 'Поле обязательно для заполнения',
             notValid: 'Введитие свой официальный доход цифрами',
-            notIncome: 'Мы Вам рекомендуем найти работу'
+            notIncome: 'Мы Вам рекомендуем найти работу',
+            livingWage: 'Доход не может быть меньше 12 702р.'
           };
     // переменная, которая сумирует выделеные чекбоксы
     let summTax = 0;
@@ -62,6 +63,14 @@ window.addEventListener('DOMContentLoaded', () => {
             btnForm.setAttribute('disabled', true);
         }
     }
+
+    function zeroSummTax() {
+        // обнуляем сумму, чтобы от двух разных запросов не суммировались выделенные чекбоксы  
+        summTax = 0;
+        // вызываем функцию, чтобы при повторном поиске кнопка снова становилась неактивной
+        disableBtn();
+    }
+
     disableBtn();
     // делаем расчет
     function payment() {
@@ -70,10 +79,9 @@ window.addEventListener('DOMContentLoaded', () => {
               maxTax = 260000,              
               annualPayment = [],
               amountOfElements = Math.floor(maxTax / taxOfYear);
-        // обнуляем сумму, чтобы от двух разных запросов не суммировались выделенные чекбоксы     
-        summTax = 0;
-        // вызываем функцию, чтобы при повторном поиске кнопка снова становилась неактивной
-        disableBtn();
+
+        zeroSummTax();
+
         for( let i = 0; i < amountOfElements; i++ ) {
             annualPayment.push(taxOfYear);
         }    
@@ -113,14 +121,22 @@ window.addEventListener('DOMContentLoaded', () => {
             case inputIncome.validity.valueMissing :
                 valid(errorText.clear, 'hidden', 'show', 'var(--main-color)');
                 shower('show', 'hidden');
+                zeroSummTax();
                 break;
             case inputIncome.value == 0:
                 valid(errorText.notIncome, 'hidden', 'show', 'var(--main-color)');
                 shower('show', 'hidden');
+                zeroSummTax();
+                break;
+            case inputIncome.value < 12702:
+                valid(errorText.livingWage, 'hidden', 'show', 'var(--main-color)');
+                shower('show', 'hidden');
+                zeroSummTax();
                 break;
             case inputIncome.value.search(/\D/g) >= 0:
                 valid(errorText.notValid, 'hidden', 'show', 'var(--main-color)');
                 shower('show', 'hidden');
+                zeroSummTax();
                 break;
             default: 
                 valid('', 'show', 'hidden', '#DFE3E6');

@@ -1,9 +1,5 @@
 .form {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
     margin-top: 24px;
     &__text {
         font-weight: 500;
@@ -23,7 +19,9 @@
         display: flex;
         align-items: center;
         margin-top: 24px;
-
+        &-btns {
+            display: flex;
+        }
         input[type=radio] {
             appearance: none;
             display: none;
@@ -34,7 +32,7 @@
             }
         }
         label {
-            margin-left: 44px;
+            margin-right: 16px;
             min-width: 57px;
             height: 36px;
             padding: 6px 12px;
@@ -48,16 +46,15 @@
             text-align: center;
             color: black;
             transition: all .3s;
-
             &:hover {
                 background: #DFE3E6;
             }
-
             &:last-child {
-                margin-left: 16px;
+                margin-right: 0;
             }
         }
         &-text {
+            margin-right: 32px;
             font-weight: 500;
             font-size: 14px;
             line-height: 24px;
@@ -85,37 +82,27 @@
             margin-bottom: 16px;
             input {
                 appearance: none;
-                &:before {
-                    content: '';
-                    display: block;
-                    position: absolute;
-                    width: 20px;
-                    height: 20px;
-                    top: -5px;
-                    border: 1px solid #DFE3E6;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    transition: border .3s;
-                }
+                position: absolute;
+                outline: none;
+                width: 20px;
+                height: 20px;
+                top: -5px;
+                border: 1px solid #DFE3E6;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: border .3s;
                 &:hover {
-                    &:before {
-                        border: 1px solid #000;
-                    }
+                    border: 1px solid #000;
                 }
                 &:checked {
                     cursor: pointer;
-                    &:before {
-                        background: var(--bg-color-gradient);
-                        border: none;
-                    }
-
+                    background: var(--bg-color-gradient);
+                    border: none;
                     &:after {
                         content: '';
                         display: block;
                         width: 20px;
                         height: 20px;
-                        top: -5px;
-                        position: absolute;
                         background: url(../icons/checked.svg) center center no-repeat;
                     }
                 }

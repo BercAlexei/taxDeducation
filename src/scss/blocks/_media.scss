@@ -9,10 +9,47 @@
 @media (max-width: 768px) {}
 
 @media (max-width: 576px) {
+
+    .title {
+        font-size: 18px;
+        line-height: 24px;
+    }
+    .btn {
+        height: 40px;
+    }
+    .begin {
+        transition: all .7s;
+    }
+    .modal {
+        &__window {
+            width: 300px;
+        }
+    }
     .tax {
         top: 0;
         width: 100vw;
         min-height: 100vh;
         border-radius: 0;
+        padding: 16px;
+        &__close {
+            font-size: 30px;
+            line-height: 30px;
+        }
+        &__descr {
+            font-size: 12px;
+            line-height: 16px;
+        }
+    }
+    .form {
+        &__radio{
+            align-items: flex-start;
+            flex-direction: column;
+            &-text {
+                margin-right: 0;
+            }
+            &-btns {
+                margin-top: 24px;
+            }
+        }
     }
 }
