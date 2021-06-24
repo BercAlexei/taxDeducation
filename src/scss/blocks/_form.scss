@@ -1,5 +1,4 @@
 .form {
-    position: relative;
     margin-top: 24px;
     &__text {
         font-weight: 500;
@@ -25,7 +24,6 @@
         input[type=radio] {
             appearance: none;
             display: none;
-
             &:checked+label {
                 background: var(--bg-color-gradient);
                 color: white;
