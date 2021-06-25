@@ -110,6 +110,7 @@ window.addEventListener('DOMContentLoaded', function () {
       summTax = 0;
       disableBtn();
       shower('show', 'hidden');
+      valid('', 'show', 'hidden', '#DFE3E6');
       inputIncome.value = '';
     }, 800);
   }); //payment
@@ -124,9 +125,13 @@ window.addEventListener('DOMContentLoaded', function () {
       form = document.querySelector('form'),
       errorText = {
     clear: 'Поле обязательно для заполнения',
-    notValid: 'Введитие свой официальный доход цифрами',
     notIncome: 'Мы Вам рекомендуем найти работу',
     livingWage: 'Доход не может быть меньше 12 702р.'
+  },
+      optionsLocale = {
+    style: 'currency',
+    currency: 'RUB',
+    maximumFractionDigits: 0
   }; // переменная, которая сумирует выделеные чекбоксы
 
   var summTax = 0; // функция, которая показывает чекбоксы 
@@ -171,7 +176,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   function payment() {
     //создаем массив в который помещаем ежегодные выплаты 
-    var taxOfYear = inputIncome.value * 12 * 0.13,
+    var taxOfYear = inputIncome.value.replace(/\D/g, '') * 12 * 0.13,
         maxTax = 260000,
         annualPayment = [],
         amountOfElements = Math.floor(maxTax / taxOfYear);
@@ -187,7 +192,7 @@ window.addEventListener('DOMContentLoaded', function () {
     annualPayment.forEach(function (item, i) {
       var checkIncomeYear = document.createElement('li');
       checkIncomeYear.classList.add('form__payment-check');
-      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-check>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
+      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-check>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item).toLocaleString('ru-RU', optionsLocale), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
       paymentCheckList.append(checkIncomeYear);
       shower('hidden', 'show');
     });
@@ -197,11 +202,11 @@ window.addEventListener('DOMContentLoaded', function () {
   paymentCheckList.addEventListener('click', function (event) {
     switch (true) {
       case event.target.getAttribute('data-check') == '' && event.target.checked:
-        summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
+        summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
         break;
 
       case event.target.getAttribute('data-check') == '' && !event.target.checked:
-        summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.match(/\d+/g));
+        summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
         break;
     }
 
@@ -217,20 +222,14 @@ window.addEventListener('DOMContentLoaded', function () {
         zeroSummTax();
         break;
 
-      case inputIncome.value == 0:
+      case inputIncome.value.replace(/\D/g, '') == 0:
         valid(errorText.notIncome, 'hidden', 'show', 'var(--main-color)');
         shower('show', 'hidden');
         zeroSummTax();
         break;
 
-      case inputIncome.value < 12702:
+      case inputIncome.value.replace(/\D/g, '') < 12702:
         valid(errorText.livingWage, 'hidden', 'show', 'var(--main-color)');
-        shower('show', 'hidden');
-        zeroSummTax();
-        break;
-
-      case inputIncome.value.search(/\D/g) >= 0:
-        valid(errorText.notValid, 'hidden', 'show', 'var(--main-color)');
         shower('show', 'hidden');
         zeroSummTax();
         break;
@@ -238,6 +237,17 @@ window.addEventListener('DOMContentLoaded', function () {
       default:
         valid('', 'show', 'hidden', '#DFE3E6');
         payment();
+    }
+  }); // преобразуем строку в число и производим разделение по разрядам
+
+  inputIncome.addEventListener('input', function () {
+    var num = Number(inputIncome.value.replace(/\D/g, ''));
+    inputIncome.value = num.toLocaleString('ru-RU', optionsLocale);
+  }); // реализация удаления последнего числа в инпуте, т.к. после разделения по разрядам мы удаляли последний символ, которым являлся символ рубля
+
+  inputIncome.addEventListener('keydown', function (event) {
+    if (event.code === 'Backspace') {
+      inputIncome.value = inputIncome.value.replace(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF](?:[\$\xA2-\xA5\u058F\u060B\u07FE\u07FF\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BF\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]|\uD807[\uDFDD-\uDFE0]|\uD838\uDEFF|\uD83B\uDCB0)/, '');
     }
   }); // modal
 
@@ -269,7 +279,7 @@ window.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     modalOpen();
-    spanModal.textContent = summTax;
+    spanModal.textContent = summTax.toLocaleString('ru-RU', optionsLocale);
   });
 });
 
