@@ -120,7 +120,6 @@ window.addEventListener('DOMContentLoaded', function () {
       btnForm = document.querySelector('.btn_form'),
       paymentList = document.querySelector('.form__payment'),
       paymentCheckList = paymentList.querySelector('ul'),
-      paymentCheckInput = paymentCheckList.querySelector('span'),
       error = document.querySelector('.error'),
       form = document.querySelector('form'),
       errorText = {
@@ -147,13 +146,6 @@ window.addEventListener('DOMContentLoaded', function () {
     error.classList.remove(remove);
     error.classList.add(add);
     inputIncome.style.border = "1px solid ".concat(color);
-  } // функция, которая очищает поле при каждом поиске
-
-
-  function removeItem(groupItem) {
-    groupItem.forEach(function (item) {
-      item.remove();
-    });
   } //функция которая делает кнопку неактивной или активной
 
 
@@ -165,14 +157,15 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  disableBtn();
+
   function zeroSummTax() {
     // обнуляем сумму, чтобы от двух разных запросов не суммировались выделенные чекбоксы  
     summTax = 0; // вызываем функцию, чтобы при повторном поиске кнопка снова становилась неактивной
 
     disableBtn();
-  }
+  } // делаем расчет
 
-  disableBtn(); // делаем расчет
 
   function payment() {
     //создаем массив в который помещаем ежегодные выплаты 
@@ -180,38 +173,27 @@ window.addEventListener('DOMContentLoaded', function () {
         maxTax = 260000,
         annualPayment = [],
         amountOfElements = Math.floor(maxTax / taxOfYear);
-    zeroSummTax();
+    zeroSummTax(); //заполняем массив числами которые без остатка поместяться в 260 000
 
     for (var i = 0; i < amountOfElements; i++) {
       annualPayment.push(taxOfYear);
-    }
+    } // ппомещаем в конец массива остаток
 
-    annualPayment.push(maxTax % taxOfYear);
-    removeItem(paymentCheckList.querySelectorAll('.form__payment-check')); //создаем чекбоксы
+
+    annualPayment.push(maxTax % taxOfYear); //удаляем чекбоксы
+
+    paymentCheckList.innerHTML = ''; //создаем чекбоксы
 
     annualPayment.forEach(function (item, i) {
       var checkIncomeYear = document.createElement('li');
       checkIncomeYear.classList.add('form__payment-check');
       checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-check>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item).toLocaleString('ru-RU', optionsLocale), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
       paymentCheckList.append(checkIncomeYear);
-      shower('hidden', 'show');
     });
-  } //суммируем выделенные чекбоксы
+    shower('hidden', 'show');
+  } // нажатие на кнопку расчитать
 
 
-  paymentCheckList.addEventListener('click', function (event) {
-    switch (true) {
-      case event.target.getAttribute('data-check') == '' && event.target.checked:
-        summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
-        break;
-
-      case event.target.getAttribute('data-check') == '' && !event.target.checked:
-        summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
-        break;
-    }
-
-    disableBtn();
-  });
   incomeBtn.addEventListener('click', function (event) {
     event.preventDefault();
 
@@ -238,6 +220,20 @@ window.addEventListener('DOMContentLoaded', function () {
         valid('', 'show', 'hidden', '#DFE3E6');
         payment();
     }
+  }); //суммируем выделенные чекбоксы
+
+  paymentCheckList.addEventListener('click', function (event) {
+    switch (true) {
+      case event.target.getAttribute('data-check') == '' && event.target.checked:
+        summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
+        break;
+
+      case event.target.getAttribute('data-check') == '' && !event.target.checked:
+        summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
+        break;
+    }
+
+    disableBtn();
   }); // преобразуем строку в число и производим разделение по разрядам
 
   inputIncome.addEventListener('input', function () {
