@@ -7,11 +7,11 @@ window.addEventListener('DOMContentLoaded', () => {
           close = document.querySelector('.tax__close');
 
     btn.addEventListener('click', () => {
-        disp.classList.toggle('close');
+        disp.classList.add('begin_active');
     });
 
     close.addEventListener('click', () => {
-        disp.classList.toggle('close');
+        disp.classList.remove('begin_active');
         setTimeout(() => {
             summTax = 0;
             disableBtn();
@@ -151,7 +151,8 @@ window.addEventListener('DOMContentLoaded', () => {
     // реализация удаления последнего числа в инпуте, т.к. после разделения по разрядам мы удаляли последний символ, которым являлся символ рубля
     inputIncome.addEventListener('keydown', (event) => {
         if(event.code === 'Backspace') {
-            inputIncome.value = inputIncome.value.replace(/\s\p{Sc}/u, '');
+            // удаляем любой символ если за ним следует любой символ и знак валюты
+            inputIncome.value = inputIncome.value.replace(/\d(?=.\p{Sc})/u, '');
         }
     });
 
