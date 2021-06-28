@@ -102,10 +102,10 @@ window.addEventListener('DOMContentLoaded', function () {
       disp = document.querySelector('.begin'),
       close = document.querySelector('.tax__close');
   btn.addEventListener('click', function () {
-    disp.classList.add('begin_active');
+    disp.classList.toggle('close');
   });
   close.addEventListener('click', function () {
-    disp.classList.remove('begin_active');
+    disp.classList.toggle('close');
     setTimeout(function () {
       summTax = 0;
       disableBtn();

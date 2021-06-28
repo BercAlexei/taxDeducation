@@ -7,11 +7,11 @@ window.addEventListener('DOMContentLoaded', () => {
           close = document.querySelector('.tax__close');
 
     btn.addEventListener('click', () => {
-        disp.classList.add('begin_active');
+        disp.classList.toggle('close');
     });
 
     close.addEventListener('click', () => {
-        disp.classList.remove('begin_active');
+        disp.classList.toggle('close');
         setTimeout(() => {
             summTax = 0;
             disableBtn();
