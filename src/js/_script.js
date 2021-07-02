@@ -94,8 +94,9 @@ window.addEventListener('DOMContentLoaded', () => {
             const checkIncomeYear = document.createElement('li');
 
             checkIncomeYear.classList.add('form__payment-check');
+            checkIncomeYear.setAttribute('data-check', '')
             checkIncomeYear.innerHTML = `
-                <input type="checkbox" data-check>
+                <input type="checkbox" data-checkBox>
                 <div class="form__payment-check-text"><span>${Math.floor(item).toLocaleString('ru-RU', optionsLocale)} рублей</span> в ${i + 1}-ый год</div>
             `;
 
@@ -128,15 +129,25 @@ window.addEventListener('DOMContentLoaded', () => {
                 payment();
         }
     });
-    
+
     //суммируем выделенные чекбоксы
     paymentCheckList.addEventListener('click', event => {
+        const target = event.target.closest('li');
+
         switch (true) {
-            case (event.target.getAttribute('data-check') == '' && event.target.checked):
-                summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
+            case (event.target.getAttribute('data-checkBox') == '' && target.querySelector('input').checked):
+                summTax += Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
                 break;
-            case (event.target.getAttribute('data-check') == '' && !event.target.checked): 
-                summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
+            case (event.target.getAttribute('data-checkBox') == '' && !target.querySelector('input').checked):
+                summTax -= Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
+                break;
+            case (target && !target.querySelector('input').checked && event.target.getAttribute('data-checkBox') !== ''):
+                target.querySelector('input').checked = true;
+                summTax += Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
+                break;
+            case (target && target.querySelector('input').checked && event.target.getAttribute('data-checkBox') !== ''): 
+                target.querySelector('input').checked = false;
+                summTax -= Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
                 break;
         }
         disableBtn();

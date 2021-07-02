@@ -187,7 +187,8 @@ window.addEventListener('DOMContentLoaded', function () {
     annualPayment.forEach(function (item, i) {
       var checkIncomeYear = document.createElement('li');
       checkIncomeYear.classList.add('form__payment-check');
-      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-check>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item).toLocaleString('ru-RU', optionsLocale), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
+      checkIncomeYear.setAttribute('data-check', '');
+      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-checkBox>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item).toLocaleString('ru-RU', optionsLocale), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
       paymentCheckList.append(checkIncomeYear);
     });
     shower('hidden', 'show');
@@ -223,13 +224,25 @@ window.addEventListener('DOMContentLoaded', function () {
   }); //суммируем выделенные чекбоксы
 
   paymentCheckList.addEventListener('click', function (event) {
+    var target = event.target.closest('li');
+
     switch (true) {
-      case event.target.getAttribute('data-check') == '' && event.target.checked:
-        summTax += Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
+      case event.target.getAttribute('data-checkBox') == '' && target.querySelector('input').checked:
+        summTax += Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
         break;
 
-      case event.target.getAttribute('data-check') == '' && !event.target.checked:
-        summTax -= Number(event.target.nextSibling.nextSibling.childNodes[0].innerHTML.replace(/\D/g, ''));
+      case event.target.getAttribute('data-checkBox') == '' && !target.querySelector('input').checked:
+        summTax -= Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
+        break;
+
+      case target && !target.querySelector('input').checked && event.target.getAttribute('data-checkBox') !== '':
+        target.querySelector('input').checked = true;
+        summTax += Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
+        break;
+
+      case target && target.querySelector('input').checked && event.target.getAttribute('data-checkBox') !== '':
+        target.querySelector('input').checked = false;
+        summTax -= Number(target.querySelector('span').innerHTML.replace(/\D/g, ''));
         break;
     }
 
