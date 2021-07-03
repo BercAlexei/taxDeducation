@@ -131,7 +131,8 @@ window.addEventListener('DOMContentLoaded', function () {
     style: 'currency',
     currency: 'RUB',
     maximumFractionDigits: 0
-  }; // переменная, которая сумирует выделеные чекбоксы
+  },
+      endings = ['в', 'во', 'ой', 'ий', 'ый']; // переменная, которая сумирует выделеные чекбоксы
 
   var summTax = 0; // функция, которая показывает чекбоксы 
 
@@ -164,6 +165,22 @@ window.addEventListener('DOMContentLoaded', function () {
     summTax = 0; // вызываем функцию, чтобы при повторном поиске кнопка снова становилась неактивной
 
     disableBtn();
+  }
+
+  function setEndings(num, arr) {
+    switch (true) {
+      case num == 2:
+        return "".concat(arr[1], " ").concat(num, "-").concat(arr[2]);
+
+      case num >= 6 && num < 9:
+        return "".concat(arr[0], " ").concat(num, "-").concat(arr[2]);
+
+      case num == 3:
+        return "".concat(arr[0], " ").concat(num, "-").concat(arr[3]);
+
+      default:
+        return "".concat(arr[0], " ").concat(num, "-").concat(arr[4]);
+    }
   } // делаем расчет
 
 
@@ -188,7 +205,7 @@ window.addEventListener('DOMContentLoaded', function () {
       var checkIncomeYear = document.createElement('li');
       checkIncomeYear.classList.add('form__payment-check');
       checkIncomeYear.setAttribute('data-check', '');
-      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-checkBox>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item).toLocaleString('ru-RU', optionsLocale), " \u0440\u0443\u0431\u043B\u0435\u0439</span> \u0432 ").concat(i + 1, "-\u044B\u0439 \u0433\u043E\u0434</div>\n            ");
+      checkIncomeYear.innerHTML = "\n                <input type=\"checkbox\" data-checkBox>\n                <div class=\"form__payment-check-text\"><span>".concat(Math.floor(item).toLocaleString('ru-RU', optionsLocale), " \u0440\u0443\u0431\u043B\u0435\u0439</span> ").concat(setEndings(i + 1, endings), " \u0433\u043E\u0434</div>\n            ");
       paymentCheckList.append(checkIncomeYear);
     });
     shower('hidden', 'show');

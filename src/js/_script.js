@@ -38,7 +38,8 @@ window.addEventListener('DOMContentLoaded', () => {
             style: 'currency',
             currency: 'RUB', 
             maximumFractionDigits: 0
-          };
+          },
+          endings = ['в', 'во', 'ой', 'ий', 'ый'];
 
     // переменная, которая сумирует выделеные чекбоксы
     let summTax = 0;
@@ -72,6 +73,19 @@ window.addEventListener('DOMContentLoaded', () => {
         disableBtn();
     }
 
+    function setEndings(num, arr) {
+        switch(true) {
+            case num == 2 :
+                return `${arr[1]} ${num}-${arr[2]}`;
+            case (num >= 6 && num < 9):
+                return `${arr[0]} ${num}-${arr[2]}`;
+            case num == 3:
+                return `${arr[0]} ${num}-${arr[3]}`;
+            default :
+                return `${arr[0]} ${num}-${arr[4]}`;
+        }
+    }
+
     // делаем расчет
     function payment() {
         //создаем массив в который помещаем ежегодные выплаты 
@@ -94,10 +108,10 @@ window.addEventListener('DOMContentLoaded', () => {
             const checkIncomeYear = document.createElement('li');
 
             checkIncomeYear.classList.add('form__payment-check');
-            checkIncomeYear.setAttribute('data-check', '')
+            checkIncomeYear.setAttribute('data-check', '');
             checkIncomeYear.innerHTML = `
                 <input type="checkbox" data-checkBox>
-                <div class="form__payment-check-text"><span>${Math.floor(item).toLocaleString('ru-RU', optionsLocale)} рублей</span> в ${i + 1}-ый год</div>
+                <div class="form__payment-check-text"><span>${Math.floor(item).toLocaleString('ru-RU', optionsLocale)} рублей</span> ${setEndings(i + 1, endings)} год</div>
             `;
 
             paymentCheckList.append(checkIncomeYear);
